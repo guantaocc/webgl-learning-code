@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>屏幕坐标系转换</title>
+  <style>
+    body {
+      padding-top: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas")
+    canvas.width = 600
+    canvas.height = 400
+    const gl = canvas.getContext('webgl')
+
+    function translateCord(canvas, point){
+      // 鼠标相对屏幕坐标系
+      let { x, y} = point
+      console.log('屏幕坐标', x, y)
+      let { width, height, left, top } = canvas.getBoundingClientRect()
+      // 相对坐标
+      let mouseVec = [x, y]
+      let canvasVec = [left, top]
+      let coord = [x - left, y - top]
+
+      function unitWidth(e){
+        return (e - width / 2) / (width / 2)
+      }
+      function unitHeight(e){
+        return (e - height / 2) / (height / 2)
+      }
+      // 获取相对坐标 并将 y取反
+      let glPoint = {
+        x: unitWidth(coord[0]),
+        y: -unitHeight(coord[1])
+      }
+      console.log('webgl坐标', glPoint.x, glPoint.y)
+    }
+
+    canvas.addEventListener('click', function (e){
+      translateCord(canvas, { x: e.clientX, y: e.clientY})
+    })
+
+    gl.clearColor(0, 0, 0, 1)
+    // 用上面指定的颜色清除缓冲区
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  </script>
+</body>
+</html>

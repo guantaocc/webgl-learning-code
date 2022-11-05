@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>webGL 起步</title>
+  <style>
+    body,html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas")
+    const gl = canvas.getContext('webgl')
+    // webgl 颜色
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    // css string 转换 webgl颜色
+    // rgba(255, 255, 255, 1)
+
+    function toGlColor(cssString){
+      let reg = new RegExp(/\((.*)\)/)
+      let str = reg.exec(cssString)[1]
+      let rgb = str.split(',').map(item => parseInt(item))
+      
+      return rgb.map((item, index) => {
+        if(index === rgb.length - 1) return
+        return item / 255
+      })
+
+    } 
+    gl.clearColor(...toGlColor('rgba(0, 0, 0, 1)'))
+    // 用上面指定的颜色清除缓冲区
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  </script>
+</body>
+</html>
