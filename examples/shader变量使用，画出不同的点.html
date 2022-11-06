@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>shader attributes</title>
+  <style>
+    body {
+      padding-top: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  <!-- 顶点着色器 -->
+  <script id="vertexShader" type="x-shader/x-vertex">
+    attribute vec4 a_Position; // 顶点变量
+    attribute float a_PointSize;
+    void main(){
+      gl_Position = a_Position; // webgl坐标系 x, y, z
+      gl_PointSize = a_PointSize;
+    }
+  </script>
+  <!-- 片元着色器 -->
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    void main(){
+      gl_FragColor = vec4(1, 1, 0, 1);
+    }
+  </script>
+  <script>
+    const canvas = document.getElementById("canvas")
+    canvas.width = 600
+    canvas.height = 400
+    const gl = canvas.getContext('webgl')
+
+    // 创建着色器方法，输入参数：渲染上下文，着色器类型，数据源
+    function createShader(gl, type, source) {
+      var shader = gl.createShader(type); // 创建着色器对象
+      gl.shaderSource(shader, source); // 提供数据源
+      gl.compileShader(shader); // 编译 -> 生成着色器
+      var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+      if (success) {
+        // 编译成功，返回 shader
+        return shader;
+      }
+      console.log(gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+    }
+
+    var vertexShaderSource = document.getElementById("vertexShader").innerText;
+    var fragmentShaderSource = document.getElementById("fragmentShader").innerText;
+
+    // 创建顶点和片元着色器
+    var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    function createProgram(gl, vertexShader, fragmentShader) {
+      var program = gl.createProgram();
+      gl.attachShader(program, vertexShader);
+      gl.attachShader(program, fragmentShader);
+      gl.linkProgram(program);
+
+      gl.useProgram(program)
+
+      gl.program = program
+      return program
+    }
+
+    // 连接到着色器程序
+    var program = createProgram(gl, vertexShader, fragmentShader);
+
+    console.log(program)
+
+    // 存储 所有 points
+    const glPoints = []
+
+    // 获取 顶点变量
+    const a_Position = gl.getAttribLocation(gl.program, 'a_Position')
+    const a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize')
+
+    gl.clearColor(0, 0, 0, 1)
+    // 用上面指定的颜色清除缓冲区
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    function translateCord(canvas, point) {
+      // 鼠标相对屏幕坐标系
+      let { x, y } = point
+      console.log('屏幕坐标', x, y)
+      let { width, height, left, top } = canvas.getBoundingClientRect()
+      // 相对坐标
+      let mouseVec = [x, y]
+      let canvasVec = [left, top]
+      let coord = [x - left, y - top]
+
+      function unitWidth(e) {
+        return (e - width / 2) / (width / 2)
+      }
+      function unitHeight(e) {
+        return (e - height / 2) / (height / 2)
+      }
+      // 获取相对坐标 并将 y取反
+      let glPoint = {
+        x: unitWidth(coord[0]),
+        y: -unitHeight(coord[1])
+      }
+      console.log('webgl坐标', glPoint.x, glPoint.y)
+      return glPoint
+    }
+
+    canvas.addEventListener('click', function (e) {
+      let loc = translateCord(canvas, { x: e.clientX, y: e.clientY })
+      const size = 10 * Math.random() + 10
+
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      glPoints.push({ ...loc, size: size })
+
+      glPoints.forEach(vec => {
+        // 修改变量
+        let { x, y, size } = vec
+        gl.vertexAttrib3f(a_Position, x, y, 0.0)
+        gl.vertexAttrib1f(a_PointSize, size)
+
+        // 绘制顶点
+        gl.drawArrays(gl.POINTS, 0, 1)
+      })
+    })
+
+  </script>
+</body>
+
+</html>
