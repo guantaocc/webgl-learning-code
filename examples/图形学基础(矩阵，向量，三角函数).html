@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- 通过 canvas 坐标 示例画布展示 -->
+  <canvas id="canvas"></canvas>
+  <script>
+    // 三角函数，角度和弧度的概念
+    // 弧度: 由归一化的圆，半径为 1 的圆的一周的周长
+    // 角度转弧度  360° = 2πr = 2π
+    function fromDegrees(value) {
+      return Math.PI / 180 * value
+    }
+
+    // 弧度转角度
+    function radians(value) {
+      return 180 / Math.PI * value
+    }
+
+    // 三角函数 
+    // 正弦 Math.sin()
+    // 余弦 Math.cos()
+    // 三角公式 c² = a² + b²
+
+    // 正三角形 斜边 已知 a = 1, b = 1 求 c
+    let c = Math.sqrt(1 ** 2 + 1 ** 2)
+
+    console.log(c)
+
+    // 倒推求 a, b  45度
+    let a = c * Math.sin(fromDegrees(45))
+    let b = c * Math.cos(fromDegrees(45))
+
+
+    console.log(a, b)
+
+    // 有偏差
+    console.log('tan', Math.tan(fromDegrees(45)))
+
+    // 三角正弦曲线
+    // sin(x + 2k * π ) = sin(x)
+    // 即: y = sin(x)
+    // 余弦函数: y = cos(x)
+
+    // 正弦函数 y=Asin(ωx+φ)
+
+    // 4000 = 2π / x
+
+    // x = π / 2000
+
+
+
+    // 向量, 有方向，有长度的值，通常使用 数组表示
+
+    // 例如 a点到b点 的向量为 b - a
+    let verx_a = [10, 10]
+    let verx_b = [100, 150]
+
+    // 向量 ab
+    let [x, y] = [verx_a[0] - verx_b[0], verx_a[1] - verx_b[1]]
+
+    // ** 向量的加减法 等同于 每个位置上进行加减法
+    // ** 向量的乘法, 向量积公式
+
+
+
+
+
+    // 向量的应用 向量 ab 的长度为一条线
+
+    let canvas = document.getElementById('canvas')
+
+    // 绘制一个线条
+    const context = canvas.getContext("2d");
+    context.beginPath();
+    context.moveTo(verx_a[0], verx_b[0])
+    context.lineTo(verx_b[0], verx_b[1])
+    context.closePath()
+    context.stroke();
+
+    // 线条的长度 等于 向量 ab 的长度
+    let lineLength = Math.sqrt(x ** 2 + y ** 2)
+    console.log('线条长度', lineLength)
+
+    // 单位元
+
+  </script>
+</body>
+
+</html>

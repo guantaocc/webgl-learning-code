@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>弹跳小动画</title>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      background-color: #999;
+    }
+
+    .point {
+      border-radius: 50%;
+      height: 20px;
+      width: 20px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-color: #000;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="container">
+    <div class="point" id="point"></div>
+  </div>
+  <script>
+    let pos = [190, 290]
+    let startPos = pos
+    let offset = []
+    let current
+
+    // 需要弹跳的高度，弹跳高度逐渐降低
+    let height = 200
+
+    let raf
+
+    let startTime = new Date().getTime()
+
+    function rafTime(now) {
+      let last = now - startTime
+      // 计算周期
+      let x = last % 2000
+      // 三角函数 正弦公式
+      // 分别在 1s 和 2s 处到达 0
+      return height * Math.sin(Math.PI / 1000 * x)
+    }
+
+
+    const container = document.getElementById('container')
+    const point = document.getElementById('point')
+
+    function setPointPos(pos) {
+      point.style.left = pos[0] + 'px'
+      point.style.top = pos[1] + 'px'
+    }
+
+    setPointPos(pos)
+
+    let drag = false
+
+    point.addEventListener('mousedown', () => {
+      window.cancelAnimationFrame(raf)
+      setPointPos(startPos)
+      point.style.cursor = 'move'
+      drag = true
+    })
+
+    document.addEventListener('mousemove', (e) => {
+      if (drag) {
+        let p = [pos[0], e.clientY]
+        pos = p
+        setPointPos(pos)
+      }
+    })
+
+    container.addEventListener('mouseup', () => {
+      drag = false
+      let containerHeight = container.clientHeight
+      let y = pos[1]
+      offset = [containerHeight - y, y]
+      current = offset[1]
+      raf = requestAnimationFrame(run)
+    })
+
+    function run(time) {
+      let current = rafTime(time) + container.clientHeight / 2
+
+      pos = [pos[0], current]
+
+      setPointPos(pos)
+
+      requestAnimationFrame(run)
+    }
+
+  </script>
+</body>
+
+</html>
